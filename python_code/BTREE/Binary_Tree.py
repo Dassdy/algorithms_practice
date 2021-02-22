@@ -4,4 +4,4 @@ from random import sample
 
 #binary tree class
 
-class 
+class BTree(object):
