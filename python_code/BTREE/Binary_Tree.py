@@ -72,6 +72,14 @@ class BTree(object):
 
     # leaves of binary tree
     def leaves(self):
+        if self.data is None:
+            return None
+        if self.left is None and self.right is None:
+            print(self.data, end=' ')
+        if self.left is not None:
+            self.left.leaves()
+        if self.right is not None:
+            self.right.leaves()s
 
     # show the binary tree
     def print_tree(self, save_path='./Binary_Tree.gv', label=False):
