@@ -42,9 +42,33 @@ class BTree(object):
         
     # levelorder traverse
     def levelorder(self):
+        tree_height=self.height()
+        level_order=[]
+        if self.data is not None:
+            level_order.append([self])
+        if self.left.data or self.right.data is not None:
+            for i in range(2, tree_height):
+                level_nodes=[]
+                for node in level_order[i-1]:
+                    if node.left.data is not None:
+                        level_nodes.append(node.left)
+                    if node.right.data is not None:
+                        level_nodes.append(node.right)
+        return level_order
 
     # height of binary tree
     def height(self):
+        if self.data is None:
+            tree_height=0
+        elif self.left is None and self.right is None:
+            tree_height=1
+        elif self.left is not None and self.right is None:
+            tree_height=1+self.left.height()
+        elif self.left is None and self.right is not None:
+            tree_height=1+self.right.height()
+        elif self.left is not None and self.right is not None:
+            tree_height=1+max(self.left.height(), self.right.height())
+        return tree_height
 
     # leaves of binary tree
     def leaves(self):
