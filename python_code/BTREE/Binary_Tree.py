@@ -1,3 +1,4 @@
+from __future__ import print_function
 from graphviz import Digraph
 import uuid
 from random import sample
@@ -46,14 +47,20 @@ class BTree(object):
         level_order=[]
         if self.data is not None:
             level_order.append([self])
-        if self.left.data or self.right.data is not None:
-            for i in range(2, tree_height):
+        if self.left or self.right is not None:
+            for i in range(2, tree_height+1):
                 level_nodes=[]
-                for node in level_order[i-1]:
-                    if node.left.data is not None:
+                for node in level_order[i-2]:
+                    if node.left is not None:
                         level_nodes.append(node.left)
-                    if node.right.data is not None:
+                    if node.right is not None:
                         level_nodes.append(node.right)
+                level_order.append(level_nodes)
+
+        for i in range(len(level_order)):
+            for index in range(len(level_order[i])):
+                level_order[i][index] = level_order[i][index].data
+ 
         return level_order
 
     # height of binary tree
@@ -79,9 +86,37 @@ class BTree(object):
         if self.left is not None:
             self.left.leaves()
         if self.right is not None:
-            self.right.leaves()s
+            self.right.leaves()
 
     # show the binary tree
-    def print_tree(self, save_path='./Binary_Tree.gv', label=False):
+    def print_tree(self, save_path='./Binary_Tree.jpg', label=False):
+        # colors for labels of nodes
+        colors = ['skyblue', 'tomato', 'orange', 'purple', 'green', 'yellow', 'pink', 'red']
+        # draw one binary tree of one node as root node
+        def print_node(node, node_tag):
+            # node's color
+            color = sample(colors,1)[0]
+            if node.left is not None:
+                left_tag = str(uuid.uuid1())
+                # data of node
+                self.dot.node(left_tag, str(node.left.data), style='filled', color=color)
+                label_string = 'L' if label else ''    
+                # whether tag on the line to show left sub-tree
+                self.dot.edge(node_tag, left_tag, label=label_string)   
+                # line of left node and parent node
+                print_node(node.left, left_tag)
 
-        
+            if node.right is not None:
+                right_tag = str(uuid.uuid1())
+                self.dot.node(right_tag, str(node.right.data), style='filled', color=color)
+                label_string = 'R' if label else '' 
+                self.dot.edge(node_tag, right_tag, label=label_string)
+                print_node(node.right, right_tag)
+
+        if self.data is not None:
+            root_tag = str(uuid.uuid1())                
+            # root node label
+            self.dot.node(root_tag, str(self.data), style='filled', color=sample(colors,1)[0])
+            print_node(self, root_tag)
+
+        self.dot.render(save_path)                            
